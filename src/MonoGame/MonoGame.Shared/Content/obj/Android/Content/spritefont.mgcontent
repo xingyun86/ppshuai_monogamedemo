@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PipelineBuildEvent xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+  <SourceFile>D:/DevelopmentEnvironment/Workspaces/VisualStudioProjects/source/repos/MonoGame.Shared/MonoGame.Shared/Content/spritefont.spritefont</SourceFile>
+  <SourceTime>2018-12-09T00:35:46+08:00</SourceTime>
+  <DestFile>D:/DevelopmentEnvironment/Workspaces/VisualStudioProjects/source/repos/MonoGame.Shared/MonoGame.Shared/Content/bin/Android/Content/spritefont.xnb</DestFile>
+  <DestTime>2019-12-30T22:37:57.9205252+08:00</DestTime>
+  <Importer>FontDescriptionImporter</Importer>
+  <ImporterTime>2018-12-09T00:35:54+08:00</ImporterTime>
+  <Processor>FontDescriptionProcessor</Processor>
+  <ProcessorTime>2018-12-09T00:35:54+08:00</ProcessorTime>
+  <Parameters>
+    <Key>PremultiplyAlpha</Key>
+    <Value>True</Value>
+  </Parameters>
+  <Parameters>
+    <Key>TextureFormat</Key>
+    <Value>Compressed</Value>
+  </Parameters>
+  <Dependencies />
+  <BuildAsset />
+  <BuildOutput />
+</PipelineBuildEvent>

@@ -1,0 +1,40 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29613.14
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "MonoGame.Shared", "MonoGame.Shared\MonoGame.Shared.shproj", "{A0CDBD0E-3A41-42B7-9425-A838BC2C7383}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MonoGame.Desktop", "MonoGame.Desktop\MonoGame.Desktop.csproj", "{A8C93823-424A-4534-B593-D3B53C4083CD}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MonoGame.Android", "MonoGame.Android\MonoGame.Android.csproj", "{07FA6C81-7CF0-45FA-AD5C-4D12D1848DC8}"
+EndProject
+Global
+	GlobalSection(SharedMSBuildProjectFiles) = preSolution
+		MonoGame.Shared\MonoGame.Shared.projitems*{07fa6c81-7cf0-45fa-ad5c-4d12d1848dc8}*SharedItemsImports = 4
+		MonoGame.Shared\MonoGame.Shared.projitems*{a0cdbd0e-3a41-42b7-9425-a838bc2c7383}*SharedItemsImports = 13
+		MonoGame.Shared\MonoGame.Shared.projitems*{a8c93823-424a-4534-b593-d3b53c4083cd}*SharedItemsImports = 4
+	EndGlobalSection
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{A8C93823-424A-4534-B593-D3B53C4083CD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A8C93823-424A-4534-B593-D3B53C4083CD}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A8C93823-424A-4534-B593-D3B53C4083CD}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A8C93823-424A-4534-B593-D3B53C4083CD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{07FA6C81-7CF0-45FA-AD5C-4D12D1848DC8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{07FA6C81-7CF0-45FA-AD5C-4D12D1848DC8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{07FA6C81-7CF0-45FA-AD5C-4D12D1848DC8}.Debug|Any CPU.Deploy.0 = Debug|Any CPU
+		{07FA6C81-7CF0-45FA-AD5C-4D12D1848DC8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{07FA6C81-7CF0-45FA-AD5C-4D12D1848DC8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{07FA6C81-7CF0-45FA-AD5C-4D12D1848DC8}.Release|Any CPU.Deploy.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {27CFBC79-0370-4603-BF93-7F25DDDA9FC4}
+	EndGlobalSection
+EndGlobal
