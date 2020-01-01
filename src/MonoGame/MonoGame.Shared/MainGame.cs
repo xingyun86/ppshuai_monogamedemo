@@ -18,11 +18,12 @@ namespace MonoGame.Shared
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
 
-        private SpriteFont spriteFont;
+        private SpriteFont fpsFont;
         private readonly FrameCounter frameCounter = new FrameCounter();
 
         private Texture2D _backgroundTexture;
         private Texture2D _ballTexture;
+        private Texture2D _goalkeeperTexture;
         private int _screenWidth;
         private int _screenHeight;
         private Rectangle _backgroundRectangle;
@@ -32,11 +33,20 @@ namespace MonoGame.Shared
         private double _goalLinePosition;
         private bool _isBallMoving;
         private Vector2 _ballVelocity;
-        private int _ballPositionX;
-        private int _ballPositionY;
         private bool _isBallHit;
         private TimeSpan _startMovement;
-
+        private Rectangle _goalkeeperRectangle;
+        private int _goalKeeperWidth;
+        private int _goalKeeperHeight;
+        private int _goalkeeperPositionX;
+        private int _goalkeeperPositionY;
+        private double _aCoef;
+        private double _deltaCoef;
+        private SpriteFont _soccerFont;
+        private String _scoreText = "";
+        private int _scorePosition;
+        private int _userScore;
+        private int _computerScore;
         public MainGame()
         {
             graphics = new GraphicsDeviceManager(this);
@@ -63,13 +73,35 @@ namespace MonoGame.Shared
             var ballDimension = (_screenWidth > _screenHeight) ?
                 (int)(_screenWidth * 0.02) :
                 (int)(_screenHeight * 0.035);
+            _ballPosition.X = (int)_initialBallPosition.X;
             _ballPosition.Y = (int)_initialBallPosition.Y;
             _ballRectangle = new Rectangle((int)_initialBallPosition.X, (int)_initialBallPosition.Y,
                 ballDimension, ballDimension);
 
             _goalLinePosition = _screenHeight * 0.05;
+
+            _goalKeeperWidth = (int)(_screenWidth * 0.05);
+            _goalKeeperHeight = (int)(_screenWidth * 0.005);
+            _goalkeeperPositionX = (_screenWidth - _goalKeeperWidth)/2;
+            _goalkeeperPositionY = (int)(_screenHeight * 0.12);
+            
+            _scorePosition = (int)((_screenWidth) / 2.0);
         }
 
+        private void ResetGame()
+        {
+            _ballPosition = new Vector2(_initialBallPosition.X, _initialBallPosition.Y);
+            _goalkeeperPositionX = (_screenWidth - _goalKeeperWidth) / 2;
+            _isBallMoving = false;
+            _isBallHit = false;
+            _scoreText = string.Format("{0} x {1}", _userScore, _computerScore);
+            var scoreSize = _soccerFont.MeasureString(_scoreText);
+            _scorePosition = (int)((_screenWidth - scoreSize.X) / 2.0);
+            while (TouchPanel.IsGestureAvailable)
+            {
+                TouchPanel.ReadGesture();
+            }
+        }
         /// <summary>
         /// Allows the game to perform any initialization it needs to before starting to run.
         /// This is where it can query for any required services and load any non-graphic
@@ -96,10 +128,13 @@ namespace MonoGame.Shared
             spriteBatch = new SpriteBatch(GraphicsDevice);
 
             //TODO: use this.Content to load your game content here 
-            spriteFont = this.Content.Load<SpriteFont>("spritefont");
+            fpsFont = this.Content.Load<SpriteFont>("fpsfont");
 
             _backgroundTexture = Content.Load<Texture2D>("SoccerField");
             _ballTexture = Content.Load<Texture2D>("SoccerBall");
+
+            _goalkeeperTexture = Content.Load<Texture2D>("Goalkeeper");
+            _soccerFont = this.Content.Load<SpriteFont>("soccerfont");
         }
 
         /// <summary>
@@ -131,42 +166,55 @@ namespace MonoGame.Shared
             if (touches.Count > 0 && touches[0].State == TouchLocationState.Pressed)
             {
                 var touchPoint = new Point((int)touches[0].Position.X, (int)touches[0].Position.Y);
-                var hitRectangle = new Rectangle((int)_ballPositionX, (int)_ballPositionY, _ballTexture.Width,
+                var hitRectangle = new Rectangle((int)_ballPosition.X, (int)_ballPosition.Y, _ballTexture.Width,
                     _ballTexture.Height);
                 hitRectangle.Inflate(20, 20);
                 _isBallHit = hitRectangle.Contains(touchPoint);
+                if (!_isBallMoving && TouchPanel.IsGestureAvailable)
+                {
+                    // Read the next gesture    
+                    GestureSample gesture = TouchPanel.ReadGesture();
+                    if (gesture.GestureType == GestureType.Flick && _isBallHit)
+                    {
+                        _isBallMoving = true;
+                        _isBallHit = false;
+                        _startMovement = gameTime.TotalGameTime;
+                        _ballVelocity = gesture.Delta * (float)TargetElapsedTime.TotalSeconds / 5.0f;
+                        var rnd = new Random();
+                        _aCoef = rnd.NextDouble() * 0.005;
+                        _deltaCoef = rnd.NextDouble() * Math.PI / 2;
+                    }
+                }
             }
             MouseState mouse = Mouse.GetState();
             if (mouse.LeftButton == ButtonState.Pressed)
             {
-                var touchPoint = new Point((int)mouse.Position.X, (int)mouse.Position.Y);
-                var hitRectangle = new Rectangle((int)_ballPositionX, (int)_ballPositionY, _ballTexture.Width,
+                var mousePoint = new Point((int)mouse.Position.X, (int)mouse.Position.Y);
+                var hitRectangle = new Rectangle((int)_ballPosition.X, (int)_ballPosition.Y, _ballTexture.Width,
                     _ballTexture.Height);
-                hitRectangle.Inflate(20, 20);
-                _isBallHit = hitRectangle.Contains(touchPoint);
-            }
-            if(_isBallHit)
-            {
-                _isBallMoving = true;
-            }
-            if (!_isBallMoving && TouchPanel.IsGestureAvailable)
-            {
-                // Read the next gesture    
-                GestureSample gesture = TouchPanel.ReadGesture();
-                if (gesture.GestureType == GestureType.Flick && _isBallHit)
+                hitRectangle.Inflate(100, 20);
+                _isBallHit = hitRectangle.Contains(mousePoint);
+                if (_isBallHit)
                 {
                     _isBallMoving = true;
                     _isBallHit = false;
                     _startMovement = gameTime.TotalGameTime;
-                    _ballVelocity = gesture.Delta * (float)TargetElapsedTime.TotalSeconds / 5.0f;
+                    Vector2 delta;
+                    delta.X = (mouse.Position.X - hitRectangle.X - 100) * 10;
+                    delta.Y = -900;
+                    _ballVelocity = delta * (float)TargetElapsedTime.TotalSeconds / 5.0f;
+                    var rnd = new Random();
+                    _aCoef = rnd.NextDouble() * 0.005;
+                    _deltaCoef = rnd.NextDouble() * Math.PI / 2;
                 }
             }
             if (_isBallMoving)
             {
                 _ballPosition += _ballVelocity;
                 var timeInMovement = (gameTime.TotalGameTime - _startMovement).TotalSeconds;
+                var isTimeout = timeInMovement > 5.0;
                 // reached goal line
-                if (_ballPosition.Y < _goalLinePosition || timeInMovement > 5.0)
+                if (_ballPosition.Y < _goalLinePosition || isTimeout)
                 {
                     _ballPosition = new Vector2(_initialBallPosition.X, _initialBallPosition.Y);
                     _isBallMoving = false;
@@ -175,9 +223,32 @@ namespace MonoGame.Shared
                     {
                         TouchPanel.ReadGesture();
                     }
+                    bool isGoal = !isTimeout &&
+                                    (_ballPosition.X > _screenWidth * 0.375) &&
+                                    (_ballPosition.X < _screenWidth * 0.623);
+                    if (isGoal)
+                    {
+                        _userScore++;
+                    }
+                    else
+                    {
+                        _computerScore++;
+                    }
+                    ResetGame();
                 }
                 _ballRectangle.X = (int)_ballPosition.X;
                 _ballRectangle.Y = (int)_ballPosition.Y;
+                _goalkeeperPositionX = (int)((_screenWidth * 0.11) *
+                      Math.Sin(_aCoef * gameTime.TotalGameTime.TotalMilliseconds +
+                      _deltaCoef) + (_screenWidth * 0.75) / 2.0 + _screenWidth * 0.11);
+                _goalkeeperRectangle = new Rectangle(_goalkeeperPositionX, _goalkeeperPositionY,
+                    _goalKeeperWidth, _goalKeeperHeight);
+                if (_goalkeeperRectangle.Intersects(_ballRectangle))
+                {
+                    _computerScore++;
+                    ResetGame();
+                }
+
             }
 
             base.Update(gameTime);
@@ -210,11 +281,15 @@ namespace MonoGame.Shared
             spriteBatch.Draw(_backgroundTexture, rectangle, Color.White);
             // Draw the ball
             spriteBatch.Draw(_ballTexture, _ballRectangle, Color.White);
-
+            // Draw the goalkeeper
+            spriteBatch.Draw(_goalkeeperTexture, _goalkeeperRectangle, Color.White);
+            // Draw the score
+            spriteBatch.DrawString(_soccerFont, _scoreText,
+                 new Vector2(_scorePosition, _screenHeight * 0.9f), Color.White);
             //////////////////////////////////////////////////////////////////////
 
             // FPS
-            spriteBatch.DrawString(spriteFont, fps, Vector2.One, Color.Blue);
+            spriteBatch.DrawString(fpsFont, fps, Vector2.One, Color.Blue);
 
             // End renders all sprites to the screen:
             spriteBatch.End();
