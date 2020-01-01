@@ -20,6 +20,7 @@ namespace MonoGame.Shared
 
         private SpriteFont fpsFont;
         private readonly FrameCounter frameCounter = new FrameCounter();
+        private FPSCounterComponent fps;
 
         private Texture2D _backgroundTexture;
         private Texture2D _ballTexture;
@@ -135,6 +136,8 @@ namespace MonoGame.Shared
 
             _goalkeeperTexture = Content.Load<Texture2D>("Goalkeeper");
             _soccerFont = this.Content.Load<SpriteFont>("soccerfont");
+            fps = new FPSCounterComponent(this, spriteBatch, fpsFont);
+            Components.Add(fps);
         }
 
         /// <summary>
@@ -264,7 +267,7 @@ namespace MonoGame.Shared
 
             //TODO: Add your drawing code here
             frameCounter.Update((float)gameTime.ElapsedGameTime.TotalSeconds);
-            var fps = string.Format("FPS: ({0})", frameCounter.AverageFramesPerSecond);
+            var fps = string.Format("FPS: ({0}), MEM: ({1})", frameCounter.AverageFramesPerSecond, GC.GetTotalMemory(false));
 
             // Set the position for the background    
             var screenWidth = Window.ClientBounds.Width;
@@ -291,10 +294,10 @@ namespace MonoGame.Shared
             // FPS
             spriteBatch.DrawString(fpsFont, fps, Vector2.One, Color.Blue);
 
+            base.Draw(gameTime);
             // End renders all sprites to the screen:
             spriteBatch.End();
 
-            base.Draw(gameTime);
         }
     }
 }

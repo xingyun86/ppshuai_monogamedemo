@@ -9,6 +9,7 @@
     <Import_RootNamespace>MonoGame.Shared</Import_RootNamespace>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="$(MSBuildThisFileDirectory)FPSCounterComponent.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)FrameCounter.cs" />
     <Compile Include="$(MSBuildThisFileDirectory)MainGame.cs" />
   </ItemGroup>
